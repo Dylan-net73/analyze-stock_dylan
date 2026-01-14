@@ -1,2 +1,3 @@
-web: streamlit run painel5113.py
+web: streamlit run painel5221.py
+
 
