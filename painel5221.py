@@ -86,7 +86,7 @@ def get_fundamental_data(ticker_symbol: str) -> dict:
             'P/VP': info.get('priceToBook'), 
             'ROE': info.get('returnOnEquity'), 
             'DY': info.get('dividendYield'), 
-            'Setor': info.get('sector'),
+            'Setor': info.get('sector') or info.get('industry'),
             'Dívida/PL': float(info.get('debtToEquity', 0))/100 if info.get('debtToEquity') else None, 
             'Dívida/EBITDA': info.get('debtToEbitda'),
             'EV/EBITDA': info.get('enterpriseToEbitda'),
@@ -179,7 +179,11 @@ if st.button("Gerar Relatório"):
         df_v = pd.DataFrame(data_val)
         df_i = pd.DataFrame(data_ind)
         
-        tem_financeiro = any(df_i['Setor'].str.contains('Financial', case=False, na=False))
+        # Verificação segura da coluna 'Setor' para evitar KeyError
+        tem_financeiro = False
+        if 'Setor' in df_i.columns:
+            tem_financeiro = any(df_i['Setor'].str.contains('Financial|Bancos|Seguradoras', case=False, na=False))
+
         if tem_financeiro:
             st.info("ℹ️ **Nota sobre Instituições Financeiras:** Identificámos bancos ou seguradoras na sua análise. Para estas empresas, o indicador **Dívida/EBITDA** não é aplicável, pois o modelo de negócio baseia-se na intermediação financeira. Foque em métricas como ROE e P/VP.")
 
@@ -189,7 +193,8 @@ if st.button("Gerar Relatório"):
             st.dataframe(df_v.style.map(lambda x: 'background-color: #e6ffed;' if isinstance(x, (int, float)) and x > 0 else '', subset=['Margem Segurança (%)']).format({'Preço Atual': 'R$ {:.2f}', 'Preço Teto (Bazin)': 'R$ {:.2f}', 'Preço Graham': 'R$ {:.2f}', 'Margem Segurança (%)': '{:.2f}%'}), use_container_width=True, hide_index=True)
         with tab2:
             cols_ind = ['Ticker', 'P/L', 'P/VP', 'ROE', 'DY', 'Dívida/PL', 'Dívida/EBITDA', 'EV/EBITDA', 'CAGR Receita 5a', 'CAGR Lucro 5a']
-            st.dataframe(df_i[df_i['Ticker'].isin(df_v['Ticker'])][cols_ind], use_container_width=True, hide_index=True)
+            cols_existentes = [c for c in cols_ind if c in df_i.columns]
+            st.dataframe(df_i[df_i['Ticker'].isin(df_v['Ticker'])][cols_existentes], use_container_width=True, hide_index=True)
         with tab3:
             if data_graf:
                 fig = go.Figure()
