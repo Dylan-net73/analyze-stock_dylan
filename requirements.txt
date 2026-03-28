@@ -5,3 +5,5 @@ plotly
 xlsxwriter
 requests
 pytz
+numpy
+openpyxl
