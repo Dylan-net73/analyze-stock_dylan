@@ -1,9 +1,0 @@
-streamlit
-yfinance
-pandas
-plotly
-xlsxwriter
-requests
-pytz
-numpy
-openpyxl
