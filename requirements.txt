@@ -1,0 +1,22 @@
+# requirements.txt sugerido para painel62.py
+#
+# CONTEXTO: o app roda tanto localmente (laptop) quanto hospedado no Render.
+# Sem versões fixadas, as duas instalações podem divergir e o app se
+# comportar de forma diferente (ou quebrar) em um dos dois ambientes.
+#
+# Os pins abaixo garantem o mínimo necessário para as APIs já usadas no
+# código — ajuste os valores exatos (==) para bater com o que você já
+# testou localmente, mas mantenha pelo menos os limites mínimos comentados.
+
+streamlit>=1.42          # necessário para width='stretch' em st.dataframe/
+                          # st.plotly_chart e para st.cache_resource
+pandas>=2.2,<3.0          # necessário para resample('YE') e Styler.map;
+                          # pandas 3.x é major recente — não fixado aqui até
+                          # ser testado explicitamente contra este app
+numpy>=1.26,<3.0
+yfinance>=0.2.40          # versão com sessão via curl_cffi (ver comentários
+                          # sobre session= no início do arquivo)
+plotly>=5.20
+pytz>=2024.1
+requests>=2.31            # usado no fallback Brapi.dev
+openpyxl>=3.1             # necessário para o botão de exportação Excel (.xlsx)
